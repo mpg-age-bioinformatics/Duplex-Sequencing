@@ -102,9 +102,16 @@ python ${DSpath}/tag_to_header.py --infile1 $read1in --infile2 $read2in --outpre
 echo "Aligning with BWA" | tee -a ${logFile}
 date | tee -a ${logFile}
 
-bwa aln -t ${Ncores} $alignRef ${runIdentifier}.seq1.smi.fq > ${runIdentifier}.seq1.aln
-bwa aln -t ${Ncores} $alignRef ${runIdentifier}.seq2.smi.fq > ${runIdentifier}.seq2.aln
-bwa sampe -s $alignRef ${runIdentifier}.seq1.aln ${runIdentifier}.seq2.aln ${runIdentifier}.seq1.smi.fq ${runIdentifier}.seq2.smi.fq > ${runIdentifier}.pe.sam
+if [ ${BWA} == "aln" ]; then
+    bwa aln -t ${Ncores} $alignRef ${runIdentifier}.seq1.smi.fq > ${runIdentifier}.seq1.aln
+    bwa aln -t ${Ncores} $alignRef ${runIdentifier}.seq2.smi.fq > ${runIdentifier}.seq2.aln
+    bwa sampe -s $alignRef ${runIdentifier}.seq1.aln ${runIdentifier}.seq2.aln ${runIdentifier}.seq1.smi.fq ${runIdentifier}.seq2.smi.fq > ${runIdentifier}.pe.sam
+elif [ ${BWA} == "mem" ]; then
+    bwa mem -t ${Ncores} -T 19 $alignRef ${runIdentifier}.seq1.smi.fq ${runIdentifier}.seq2.smi.fq > ${runIdentifier}.pe.sam
+else
+    printf "Please run PE_BASH_MAKER.py with either --bwa mem or --bwa aln"
+    exit 
+fi
 
 # Step 4: Sort aligned sequences
 echo "Sorting aligned sequences" | tee -a ${logFile}

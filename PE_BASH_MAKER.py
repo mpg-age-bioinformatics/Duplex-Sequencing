@@ -131,6 +131,12 @@ def main():
             dest="output_folder",
             help="Output folder.  If not specified, defaults to bash_template.sh."
             )
+    parser.add_argument("--bwa",
+            action = "store",
+            dest="bwa",
+            help="Choose between 'aln' for bwa aln or 'mem' for bwa mem -T 19 for improved coverage of regions near the breakpoint",
+            default="aln"
+            )
     o = parser.parse_args()
     outBash = open(o.runID + ".script.sh", "w")
     
@@ -177,7 +183,8 @@ def main():
                 outBash.write("repFilt=" + o.repFilt + "\n")
             if o.progInd:
                 outBash.write("readOut=" + o.progInd + "\n")
-    
+            outBash.write("BWA=" + o.bwa + "\n")             
+ 
     outBash.write("\n\n#Generated on " + time.ctime(time.time()) + " with the command: \n")
     outBash.write("#python ")
     arguments=sys.argv
